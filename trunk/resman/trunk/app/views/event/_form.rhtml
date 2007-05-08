@@ -1,0 +1,18 @@
+<%= error_messages_for 'event' %>
+
+<!--[form:event]-->
+<p><label for="event_date">Date</label><br/>
+<%= date_select 'event', 'date'  %></p>
+
+<p><label for="event_from">From</label><br/>
+<%= time_select 'event', 'from'  %></p>
+
+<p><label for="event_to">To</label><br/>
+<%= time_select 'event', 'to'  %></p>
+
+<p><label for="event_resource_uses">Resources</label><br/>
+<%= collection_select_multiple_resource_uses :event, :resources %>
+
+
+<!--[eoform:event]-->
+

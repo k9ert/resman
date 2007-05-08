@@ -1,0 +1,54 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+first: #colliding with 3,4,5,7
+  id: 1
+  date: 2007-12-12
+  from: '12:00:00'
+  to: '14:10:00'
+  
+f2: #collisions with 3, 7
+  id: 2
+  date: 2007-12-12
+  from: '07:00:00'
+  to: '08:10:00'
+  
+f3: #collisions with 2, 7
+  id: 3
+  date: 2007-12-12
+  from: '07:00:00'
+  to: '13:10:00'
+  
+f4: #collisions with 7
+  id: 4
+  date: 2007-12-12
+  from: '12:10:00'
+  to: '13:50:00'
+  
+f5: #collisions with
+  id: 5
+  date: 2007-12-12
+  from: '13:50:00'
+  to: '18:10:00'
+  
+f6: #collisions with
+  id: 6
+  date: 2007-12-12
+  from: '17:00:00'
+  to: '20:10:00'
+  
+f7: #collisions with 2,3,4,5,6,8,9
+  id: 7
+  date: 2007-12-12
+  from: '07:00:00'
+  to: '18:10:00'
+
+f8:
+  id: 8
+  date: 2007-12-12
+  from: '07:00:00'
+  to: '12:00:00'
+  
+f9:
+  id: 9
+  date: 2007-12-12
+  from: '14:10:00'
+  to: '17:00:00'
