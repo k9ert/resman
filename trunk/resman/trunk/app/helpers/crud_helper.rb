@@ -1,2 +1,0 @@
-module CrudHelper
-end

@@ -1,7 +1,0 @@
-<td><%= date_string event.date %> </td>
-<td><%= time_string event.from %> </td>
-<td><%= time_string event.to %> </td>
-<td><% for resource_use in event.resource_uses %>
-      <%= render_resource_name resource_use  %>
-    <% end %>
- </td>
