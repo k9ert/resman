@@ -8,7 +8,7 @@ class Event < ActiveRecord::Base
 
   validate :from_is_before_to
 
-  after_save :save_resource_uses
+  #after_save :save_resource_uses
 
   # validation that this event takes some time
   def from_is_before_to
@@ -16,18 +16,23 @@ class Event < ActiveRecord::Base
   end
 
   def date=(value)
+    logger.debug "date is set with value " + value.to_s
     resource_uses.each { |ru| ru.changing_event_attributes }
-    @date_new = value.dup
+    @date_new = value.clone
+    logger.debug "@date_new is nil " if @date_new == nil
+    
     write_attribute(:date, value)
   end
 
   def date_new
+    logger.debug "@date_new is nil " if @date_new == nil
     @date_new or self.date
   end
   
   def from=(value)
-    resource_uses.each { |ru| ru.changing_event_attributes }
+    
     @from_new = value.dup
+    #resource_uses.each { |ru| ru.changing_event_attributes }
     write_attribute(:from, value)
   end
 
@@ -36,8 +41,9 @@ class Event < ActiveRecord::Base
   end
 
   def to=(value)
-    resource_uses.each { |ru| ru.changing_event_attributes }
+    
     @to_new = value.dup
+    #resource_uses.each { |ru| ru.changing_event_attributes }
     write_attribute(:to, value)
   end
 
@@ -80,21 +86,27 @@ class Event < ActiveRecord::Base
     @tmp_resource_ids.delete resource_id.to_s
   end
 
-  private
+
 
   # Callback saves the transient resourceUses in @tmp_resource_ids
   def save_resource_uses
+    self.reload
+    logger.debug "Entering event.save_resource_uses"
     @tmp_resource_ids != nil or @tmp_resource_ids = []
     # remove resource_uses not in list
     resource_uses.each do |resource_use|
       if not @tmp_resource_ids.include? resource_use.resource_id.to_s
+        logger.info "Deleting resourceUse with id #{resource_use.id}"
         resource_uses.delete(resource_use)
+      else
+        resource_use.save
       end
     end
     # add resource_uses in list (if not already there)
     @tmp_resource_ids.each do |id|
       if not resource_uses.collect {|resource_use| resource_use.resource_id}.include? id.to_i
-        resource_uses.create(:resource_id => id.to_i)
+        ru=resource_uses.create(:resource_id => id.to_i)
+        logger.info "Created resourceUse with id #{ru.id}"
       end
     end
     @tmp_resource_ids = nil
