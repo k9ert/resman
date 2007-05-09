@@ -17,20 +17,32 @@ class Event < ActiveRecord::Base
 
   def date=(value)
     resource_uses.each { |ru| ru.changing_event_attributes }
+    @date_new = value.dup
     write_attribute(:date, value)
-    resource_uses.each { |ru| ru.changed_event_attributes } 
+  end
+
+  def date_new
+    @date_new or self.date
   end
   
   def from=(value)
     resource_uses.each { |ru| ru.changing_event_attributes }
+    @from_new = value.dup
     write_attribute(:from, value)
-    resource_uses.each { |ru| ru.changed_event_attributes } 
+  end
+
+  def from_new
+    @from_new or self.from
   end
 
   def to=(value)
     resource_uses.each { |ru| ru.changing_event_attributes }
+    @to_new = value.dup
     write_attribute(:to, value)
-    resource_uses.each { |ru| ru.changed_event_attributes } 
+  end
+
+  def to_new
+    @to_new or self.to
   end
 
   # set a new list of ids for the used resources
@@ -76,13 +88,13 @@ class Event < ActiveRecord::Base
     # remove resource_uses not in list
     resource_uses.each do |resource_use|
       if not @tmp_resource_ids.include? resource_use.resource_id.to_s
-	resource_uses.delete(resource_use)
+        resource_uses.delete(resource_use)
       end
     end
     # add resource_uses in list (if not already there)
     @tmp_resource_ids.each do |id|
       if not resource_uses.collect {|resource_use| resource_use.resource_id}.include? id.to_i
-	resource_uses.create(:resource_id => id.to_i)
+        resource_uses.create(:resource_id => id.to_i)
       end
     end
     @tmp_resource_ids = nil
