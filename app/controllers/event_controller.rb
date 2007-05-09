@@ -42,6 +42,7 @@ class EventController < ApplicationController
     @event = Event.find(params[:id])
     if @event.update_attributes(params[:event])
       flash[:notice] = 'Event was successfully updated.'
+      @event.save_resource_uses
       redirect_to :action => 'show', :id => @event
     else
       puts "Update fails"
