@@ -8,7 +8,7 @@ class Event < ActiveRecord::Base
 
   validate :from_is_before_to
 
-  #after_save :save_resource_uses
+  after_save :save_resource_uses
 
   # validation that this event takes some time
   def from_is_before_to

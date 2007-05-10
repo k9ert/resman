@@ -23,14 +23,9 @@ class ResourceUse < ActiveRecord::Base
 
   # callback to remember all collisions
   def changing_event_attributes
-    @my_date = event.date.clone
-    logger.debug "event will change, mydate is " + (@my_date ==  nil ? "(nil)" : @my_date.to_s)
+    backup_event_data
+    logger.debug "event will change, mydate is " + (@saved_date ==  nil ? "(nil)" : @saved_date.to_s)
   end
-
-  def changed_event_attributes
-    
-  end
-  
 
   def before_save
     logger.debug "ENTERING before_save of resource_use"
@@ -40,8 +35,8 @@ class ResourceUse < ActiveRecord::Base
       return
     end
     logger.debug "in before_save of resource_use"
-    logger.debug "mydate is " + @my_date.to_s + "so ..."
-    if not new_record? and @my_date
+    logger.debug "mydate is " + @saved_date.to_s + "so ..."
+    if not new_record? and @saved_date
       release_old_collisions
     end
     check_for_new_collisions
@@ -100,6 +95,12 @@ class ResourceUse < ActiveRecord::Base
       resource_use.save_without_collision_check
     end
   end
+  
+  def backup_event_data
+    @saved_date = event.date.clone
+    @saved_from = event.from.clone
+    @saved_to   = event.to.clone
+  end
 
   def after_destroy
     puts "destroying ......"
@@ -133,13 +134,14 @@ class ResourceUse < ActiveRecord::Base
     timepoint == :before or timepoint == :after or raise "unexpected timepoint"
     logger.debug "COLLISION_CONDITION with timepoint " + timepoint.id2name
     logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
-    logger.debug "@mydate is " + @mydate.to_s + " ... reloading" if timepoint == :before
+    logger.debug "@saved_date is " + @saved_date.to_s + " ... reloading" if timepoint == :before
     # Don't know, why, but it#s necessary
     event.reload if timepoint == :after
-    logger.debug "@mydate is " + @mydate.to_s if timepoint == :before
-    "events.date = '#{timepoint == :before ? @my_date : self.event.date}' " +
-    "and events.from < '#{timepoint == :before ? self.event.to.strftime("%H:%M:%S") : self.event.to.strftime("%H:%M:%S") }' "+
-    "and events.to > '#{timepoint == :before ? self.event.from.strftime("%H:%M:%S") : self.event.from.strftime("%H:%M:%S") }' " +
+    logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
+    logger.debug "@saved_date is " + @saved_date.to_s if timepoint == :before
+    "events.date = '#{timepoint == :before ? @saved_date : self.event.date}' " +
+    "and events.from < '#{timepoint == :before ? @saved_to.strftime("%H:%M:%S") : self.event.to.strftime("%H:%M:%S") }' "+
+    "and events.to > '#{timepoint == :before ? @saved_from.strftime("%H:%M:%S") : self.event.from.strftime("%H:%M:%S") }' " +
     "and resource_uses.resource_id = #{ self.resource_id} " +
     (new_record? ? "": "and resource_uses.id != #{self.id.to_s}")
   end
