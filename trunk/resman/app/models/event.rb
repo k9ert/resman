@@ -24,20 +24,10 @@ class Event < ActiveRecord::Base
     write_attribute(:date, value)
   end
 
-  def date_new
-    logger.debug "@date_new is nil " if @date_new == nil
-    @date_new or self.date
-  end
-  
   def from=(value)
-    
     @from_new = value.dup
     #resource_uses.each { |ru| ru.changing_event_attributes }
     write_attribute(:from, value)
-  end
-
-  def from_new
-    @from_new or self.from
   end
 
   def to=(value)
@@ -45,10 +35,6 @@ class Event < ActiveRecord::Base
     @to_new = value.dup
     #resource_uses.each { |ru| ru.changing_event_attributes }
     write_attribute(:to, value)
-  end
-
-  def to_new
-    @to_new or self.to
   end
 
   # set a new list of ids for the used resources
@@ -90,8 +76,8 @@ class Event < ActiveRecord::Base
 
   # Callback saves the transient resourceUses in @tmp_resource_ids
   def save_resource_uses
-    self.reload
     logger.debug "Entering event.save_resource_uses"
+    logger.debug "date is " + self.date.to_s
     @tmp_resource_ids != nil or @tmp_resource_ids = []
     # remove resource_uses not in list
     resource_uses.each do |resource_use|

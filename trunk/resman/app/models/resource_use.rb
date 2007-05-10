@@ -23,8 +23,8 @@ class ResourceUse < ActiveRecord::Base
 
   # callback to remember all collisions
   def changing_event_attributes
-    @@my_date = event.date.clone
-    logger.debug "event will change, mydate is " + (@@my_date ==  nil ? "(nil)" : @my_date.to_s)
+    @my_date = event.date.clone
+    logger.debug "event will change, mydate is " + (@my_date ==  nil ? "(nil)" : @my_date.to_s)
   end
 
   def changed_event_attributes
@@ -40,9 +40,10 @@ class ResourceUse < ActiveRecord::Base
       return
     end
     logger.debug "in before_save of resource_use"
-    logger.debug "mydate is " + @@my_date.to_s
-    logger.debug "event.date_new is " +event.date_new.to_s
-    release_old_collisions if not new_record?
+    logger.debug "mydate is " + @my_date.to_s + "so ..."
+    if not new_record? and @my_date
+      release_old_collisions
+    end
     check_for_new_collisions
     logger.debug "LEAVING before_save of resource_use"
   end
@@ -51,18 +52,17 @@ class ResourceUse < ActiveRecord::Base
     logger.debug "ENTERING release_old_collisions ...(resource_use.id = #{self.id})"
     count = collision_count :before
     logger.debug  "... found  #{count} events in collision validation"
-    if count == 0
-      return # no collisions before, nothing to do
-    else
+    if count > 0
+      # Collision could be outdated for all of them
+      logger.debug ">>>>>>>>>>>>>>>>>>>>>>>>Inform them to check for their Collisions ...."
       all_collisions(:before).each {|ru| ru.save }
+      logger.debug "<<<<<<<<<<<<<<<<<<<<<<<<... Informed!!!!"
     end
     logger.debug "LEAVING release_old_collisions ...(resource_use.id = #{self.id})"
   end
 
   def check_for_new_collisions
     logger.debug "ENTERING check_for_new_collisions ...(resource_use.id = #{self.id})"
-    logger.debug " inform #{@collisions == nil ? "(nil)" : @collisions.size.to_s } others that a collision is maybe outdated"
-    @collisions.each {|ru| ru.save} if @collisions != nil
     count = collision_count :after
     logger.debug  "... found  #{count} events in collision validation"
     if count > 0
@@ -79,6 +79,7 @@ class ResourceUse < ActiveRecord::Base
           return false
       end
     else
+      logger.debug "Setting collision to false"
       self.collision = false
       true
     end
@@ -100,25 +101,13 @@ class ResourceUse < ActiveRecord::Base
     end
   end
 
-  def before_destroy
+  def after_destroy
     puts "destroying ......"
     if @no_collision_check
       puts "No collision-check"
-      return
+      return true
     end
-    logger.debug "Checking for collisions before destroy ..."
-    count = collision_count :before
-    logger.debug  "... found  #{count} events in collision validation"
-    if count == 1 # me and another one
-      logger.debug  "We have a collision to reduce"
-      fc = first_collision_ru
-      puts fc.inspect
-      fc.collision= false
-      print "saving ru ..."
-      fc.save_without_collision_check
-      puts "saved"
-      collision = true
-    end
+    release_old_collisions
   end
 
   def collision_count timepoint
@@ -142,9 +131,15 @@ class ResourceUse < ActiveRecord::Base
 
   def collision_condition timepoint
     timepoint == :before or timepoint == :after or raise "unexpected timepoint"
-    "events.date = '#{timepoint == :before ? @@my_date : self.event.date_new}' " +
-    "and events.from < '#{timepoint == :before ? self.event.to.strftime("%H:%M:%S") : self.event.to_new.strftime("%H:%M:%S") }' "+
-    "and events.to > '#{timepoint == :before ? self.event.from.strftime("%H:%M:%S") : self.event.from_new.strftime("%H:%M:%S") }' " +
+    logger.debug "COLLISION_CONDITION with timepoint " + timepoint.id2name
+    logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
+    logger.debug "@mydate is " + @mydate.to_s + " ... reloading" if timepoint == :before
+    # Don't know, why, but it#s necessary
+    event.reload if timepoint == :after
+    logger.debug "@mydate is " + @mydate.to_s if timepoint == :before
+    "events.date = '#{timepoint == :before ? @my_date : self.event.date}' " +
+    "and events.from < '#{timepoint == :before ? self.event.to.strftime("%H:%M:%S") : self.event.to.strftime("%H:%M:%S") }' "+
+    "and events.to > '#{timepoint == :before ? self.event.from.strftime("%H:%M:%S") : self.event.from.strftime("%H:%M:%S") }' " +
     "and resource_uses.resource_id = #{ self.resource_id} " +
     (new_record? ? "": "and resource_uses.id != #{self.id.to_s}")
   end
