@@ -57,12 +57,12 @@ class EventTest < Test::Unit::TestCase
 
   def test_event_destroy
     ev1 = Event.find(1)
-    print "1:length is : " + ev1.resource_uses.size.to_s
     ev1.alloc_resource 1
     ev1.save
     puts "in test_event_destroy event saved"
     assert_equal(1,ev1.resource_uses.size)
     ev1_id = ResourceUse.find(:first, :conditions => "resource_id = " +ev1.id.to_s)
+    puts "In test_event_destroy now I call destroy "
     ev1.destroy
     assert_raise(ActiveRecord::RecordNotFound) { ResourceUse.find(ev1_id) }
   end

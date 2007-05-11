@@ -1,5 +1,5 @@
 class Event < ActiveRecord::Base
-  has_many :resource_uses, :dependent => :destroy
+  has_many :resource_uses
   has_many :resources, :through => :resource_uses, :source => :resource
 
   validates_presence_of :date
@@ -10,6 +10,15 @@ class Event < ActiveRecord::Base
 
   after_save :save_resource_uses
 
+  def before_destroy
+    puts "informing before destroy"
+    resource_uses.each { |ru| ru.changing_event_attributes }
+  end
+
+  def after_destroy
+    resource_uses.each { |ru| ru.destroy }
+  end
+    
   # validation that this event takes some time
   def from_is_before_to
     (self.from <=> self.to) <= 1
@@ -18,24 +27,21 @@ class Event < ActiveRecord::Base
   def date=(value)
     logger.debug "date is set with value " + value.to_s
     resource_uses.each { |ru| ru.changing_event_attributes }
-    @date_new = value.clone
     logger.debug "@date_new is nil " if @date_new == nil
-    
     write_attribute(:date, value)
   end
 
   def from=(value)
-    @from_new = value.dup
-    #resource_uses.each { |ru| ru.changing_event_attributes }
+    resource_uses.each { |ru| ru.changing_event_attributes }
     write_attribute(:from, value)
   end
 
   def to=(value)
-    
-    @to_new = value.dup
-    #resource_uses.each { |ru| ru.changing_event_attributes }
+    resource_uses.each { |ru| ru.changing_event_attributes }
     write_attribute(:to, value)
   end
+
+
 
   # set a new list of ids for the used resources
   def resource_ids=(ids)

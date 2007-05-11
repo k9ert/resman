@@ -36,7 +36,7 @@ class ResourceUse < ActiveRecord::Base
     end
     logger.debug "in before_save of resource_use"
     logger.debug "mydate is " + @saved_date.to_s + "so ..."
-    if not new_record? and @saved_date
+    if not new_record? and @saved_date and @saved_from and @saved_to
       release_old_collisions
     end
     check_for_new_collisions
@@ -66,7 +66,7 @@ class ResourceUse < ActiveRecord::Base
       case @@collision_policy
         when :democratic
           logger.debug "Mark a collision ..."
-          mark_collision all_collisions :after
+          mark_collision (all_collisions :after)
           self.collision = true
         when :no_collisions
           errors.add_to_base("Collission!")
@@ -97,6 +97,7 @@ class ResourceUse < ActiveRecord::Base
   end
   
   def backup_event_data
+    puts "backed_up_event-data"
     @saved_date = event.date.clone
     @saved_from = event.from.clone
     @saved_to   = event.to.clone
@@ -104,10 +105,6 @@ class ResourceUse < ActiveRecord::Base
 
   def after_destroy
     puts "destroying ......"
-    if @no_collision_check
-      puts "No collision-check"
-      return true
-    end
     release_old_collisions
   end
 
@@ -135,6 +132,8 @@ class ResourceUse < ActiveRecord::Base
     logger.debug "COLLISION_CONDITION with timepoint " + timepoint.id2name
     logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
     logger.debug "@saved_date is " + @saved_date.to_s + " ... reloading" if timepoint == :before
+    logger.debug "@saved_from is " + @saved_from.to_s + " ... reloading" if timepoint == :before
+    logger.debug "@saved_to is " + @saved_to.to_s + " ... reloading" if timepoint == :before
     # Don't know, why, but it#s necessary
     event.reload if timepoint == :after
     logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
