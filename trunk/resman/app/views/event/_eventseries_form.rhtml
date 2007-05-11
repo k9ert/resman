@@ -1,0 +1,77 @@
+<%= error_messages_for 'eventseries' %>
+
+<%= form_tag({:action =>"mass_create" }, {:name => "eventseries"}) %>
+<%= submit_tag("generate!") %>
+
+<p><label for="start_date">Start date</label>
+<%= date_select 'eventseries', 'start_date'  %></p>
+
+<p><label for="event_from">From</label>
+<%= time_select 'eventseries', 'start_time'  %></p>
+
+<p><label for="event_to">To</label>
+<%= time_select 'eventseries', 'end_time'  %></p>
+
+<p><label for="events_count">How many Events should be generated</label><br/>
+<%= text_field("eventseries", "events_count") %>
+
+<p><label for="events_count">End Date</label><br/>
+<%= date_select 'eventseries', 'end_date'  %></p>
+
+<p><label for="events_count">Generator Pattern</label><br/>
+<select id="eventseries_gen_type" name="eventseries[gen_type]" onchange="ShowMenu2(this.form.eventseries_gen_type.options[this.form.eventseries_gen_type.selectedIndex].value)">
+<option value="daily">daily</option>
+<option value="weekly">weekly</option>
+<option value="monthly">monthly</option>
+<option value="yearly">yearly</option></select>
+
+<div id="daily">
+each <%= text_field("eventseries", "daily_each") %>
+<%= select("eventseries", "daily_kind_of_day", %w{day workday}) %>
+</div>
+
+<div id="weekly">
+Each <%= text_field("eventseries", "weekly_each") %> Weeks <br>
+<%= check_box("eventseries", "weekly_mon") %>
+Monday
+<%= check_box("eventseries", "weekly_tue") %>
+Tuesday
+<%= check_box("eventseries", "weekly_wed") %>
+Wednesday
+<%= check_box("eventseries", "weekly_thu") %>
+Thursday
+<%= check_box("eventseries", "weekly_fri") %>
+Friday
+<%= check_box("eventseries", "weekly_sat") %>
+Saturday
+<%= check_box("eventseries", "weekly_sun") %>
+Sunday
+
+</div>
+
+<div id="monthly">
+Not yet implemented
+</div>
+
+<div id="yearly">
+Not yet implemented
+</div>
+
+<script type="text/javascript">
+<!--
+function ShowMenu2(menu)
+{
+  
+  document.getElementById("daily").style.display = 'none'
+  document.getElementById("weekly").style.display = 'none'
+  document.getElementById("monthly").style.display = 'none'
+  document.getElementById("yearly").style.display = 'none'
+  document.getElementById(menu).style.display = 'block';
+}
+
+ShowMenu2(document.eventseries.elements["eventseries[gen_type]"].options[document.eventseries.elements["eventseries[gen_type]"].selectedIndex].value)
+-->
+</script>
+
+<%= end_form_tag %>
+

@@ -10,8 +10,7 @@
 <p><label for="event_to">To</label><br/>
 <%= time_select 'event', 'to'  %></p>
 
-<p><label for="event_resource_uses">Resources</label><br/>
-<%= collection_select_multiple_resource_uses :event, :resources %>
+<%= render :partial => 'resources_use_form' %>
 
 
 <!--[eoform:event]-->
