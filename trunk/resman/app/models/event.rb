@@ -1,12 +1,10 @@
 class Event < ActiveRecord::Base
   has_many :resource_uses
-  has_many :resources, :through => :resource_uses, :source => :resource
+  has_many :resources, :through => :resource_uses
 
   validates_presence_of :date
   validates_presence_of :from
   validates_presence_of :to
-
-  validate :from_is_before_to
 
   after_save :save_resource_uses
 
@@ -20,14 +18,12 @@ class Event < ActiveRecord::Base
   end
     
   # validation that this event takes some time
-  def from_is_before_to
-    (self.from <=> self.to) <= 1
+  def validate
+    self.from < self.to
   end
 
   def date=(value)
-    logger.debug "date is set with value " + value.to_s
     resource_uses.each { |ru| ru.changing_event_attributes }
-    logger.debug "@date_new is nil " if @date_new == nil
     write_attribute(:date, value)
   end
 
@@ -55,7 +51,6 @@ class Event < ActiveRecord::Base
   
   # Returns an array of the ids of the used Resources
   def resource_ids
-    logger.debug "Someone is calling the ids ..."
     @tmp_resource_ids != nil or @tmp_resource_ids = []
     @tmp_resource_ids = @tmp_resource_ids | resource_uses.collect {|resource_use| resource_use.resource_id.to_s}
     logger.debug "tmp_ids is" + @tmp_resource_ids.inspect

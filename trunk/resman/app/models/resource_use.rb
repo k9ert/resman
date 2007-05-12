@@ -137,10 +137,10 @@ class ResourceUse < ActiveRecord::Base
     # Don't know, why, but it#s necessary
     event.reload if timepoint == :after
     logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
-    logger.debug "@saved_date is " + @saved_date.to_s if timepoint == :before
+    logger.debug "@saved_date is " + @saved_date.to_s(:db) if timepoint == :before
     "events.date = '#{timepoint == :before ? @saved_date : self.event.date}' " +
-    "and events.from < '#{timepoint == :before ? @saved_to.strftime("%H:%M:%S") : self.event.to.strftime("%H:%M:%S") }' "+
-    "and events.to > '#{timepoint == :before ? @saved_from.strftime("%H:%M:%S") : self.event.from.strftime("%H:%M:%S") }' " +
+    "and events.from < '#{timepoint == :before ? @saved_to.to_s(:db) : self.event.to.to_s(:db) }' "+
+    "and events.to > '#{timepoint == :before ? @saved_from.to_s(:db) : self.event.from.to_s(:db) }' " +
     "and resource_uses.resource_id = #{ self.resource_id} " +
     (new_record? ? "": "and resource_uses.id != #{self.id.to_s}")
   end
