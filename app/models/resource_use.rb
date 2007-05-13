@@ -36,7 +36,7 @@ class ResourceUse < ActiveRecord::Base
     end
     logger.debug "in before_save of resource_use"
     logger.debug "mydate is " + @saved_date.to_s + "so ..."
-    if not new_record? and @saved_date and @saved_from and @saved_to
+    if not new_record? and @saved_date and @saved_start_time and @saved_end_time
       release_old_collisions
     end
     check_for_new_collisions
@@ -99,8 +99,8 @@ class ResourceUse < ActiveRecord::Base
   def backup_event_data
     puts "backed_up_event-data"
     @saved_date = event.date.clone
-    @saved_from = event.from.clone
-    @saved_to   = event.to.clone
+    @saved_start_time = event.start_time.clone
+    @saved_end_time   = event.end_time.clone
   end
 
   def after_destroy
@@ -132,15 +132,15 @@ class ResourceUse < ActiveRecord::Base
     logger.debug "COLLISION_CONDITION with timepoint " + timepoint.id2name
     logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
     logger.debug "@saved_date is " + @saved_date.to_s + " ... reloading" if timepoint == :before
-    logger.debug "@saved_from is " + @saved_from.to_s + " ... reloading" if timepoint == :before
-    logger.debug "@saved_to is " + @saved_to.to_s + " ... reloading" if timepoint == :before
+    logger.debug "@saved_start_time is " + @saved_start_time.to_s + " ... reloading" if timepoint == :before
+    logger.debug "@saved_end_time is " + @saved_end_time.to_s + " ... reloading" if timepoint == :before
     # Don't know, why, but it#s necessary
     event.reload if timepoint == :after
     logger.debug "event.date is: " +self.event.date.to_s if timepoint == :after
     logger.debug "@saved_date is " + @saved_date.to_s(:db) if timepoint == :before
     "events.date = '#{timepoint == :before ? @saved_date : self.event.date}' " +
-    "and events.from < '#{timepoint == :before ? @saved_to.to_s(:db) : self.event.to.to_s(:db) }' "+
-    "and events.to > '#{timepoint == :before ? @saved_from.to_s(:db) : self.event.from.to_s(:db) }' " +
+    "and events.start_time < '#{timepoint == :before ? @saved_end_time.to_s(:db) : self.event.end_time.to_s(:db) }' "+
+    "and events.end_time > '#{timepoint == :before ? @saved_start_time.to_s(:db) : self.event.start_time.to_s(:db) }' " +
     "and resource_uses.resource_id = #{ self.resource_id} " +
     (new_record? ? "": "and resource_uses.id != #{self.id.to_s}")
   end

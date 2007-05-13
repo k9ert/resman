@@ -3,8 +3,8 @@ class Event < ActiveRecord::Base
   has_many :resources, :through => :resource_uses
 
   validates_presence_of :date
-  validates_presence_of :from
-  validates_presence_of :to
+  validates_presence_of :start_time
+  validates_presence_of :end_time
 
   after_save :save_resource_uses
 
@@ -19,7 +19,7 @@ class Event < ActiveRecord::Base
     
   # validation that this event takes some time
   def validate
-    self.from < self.to
+    self.start_time < self.end_time
   end
 
   def date=(value)
@@ -27,14 +27,14 @@ class Event < ActiveRecord::Base
     write_attribute(:date, value)
   end
 
-  def from=(value)
+  def start_time=(value)
     resource_uses.each { |ru| ru.changing_event_attributes }
-    write_attribute(:from, value)
+    write_attribute(:start_time, value)
   end
 
-  def to=(value)
+  def end_time=(value)
     resource_uses.each { |ru| ru.changing_event_attributes }
-    write_attribute(:to, value)
+    write_attribute(:end_time, value)
   end
 
 
@@ -58,7 +58,7 @@ class Event < ActiveRecord::Base
   end
 
   def collide_with? event
-    self.date === event.date and self.to > event.from and self.from < event.to
+    self.date === event.date and self.end_time > event.start_time and self.start_time < event.end_time
   end
 
   # allocate an resource by id. This allocation is transient until save
