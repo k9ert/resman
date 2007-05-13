@@ -1,6 +1,7 @@
 class Event < ActiveRecord::Base
   has_many :resource_uses
   has_many :resources, :through => :resource_uses
+  belongs_to :schedulable, :polymorphic => true
 
   validates_presence_of :date
   validates_presence_of :start_time

@@ -1,6 +1,8 @@
 class CreateEventseries < ActiveRecord::Migration
   def self.up
     create_table :eventseries do |t|
+        t.column :schedulable_id, :integer
+        t.column :schedulable_type, :string
         t.column :start_date, :date
         t.column :start_time, :time
         t.column :end_time, :time

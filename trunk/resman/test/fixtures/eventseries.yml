@@ -1,5 +1,23 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 one:
   id: 1
+  start_date: 2007-07-07
+  start_time: 12:50
+  end_time: 13:50
+  events_count: 9
+  end_date: 2007-07-09
+  gen_type: weekly
+        
+  daily_each: 1
+  daily_kind_of_day: workday
+        
+  weekly_each: 2
+  weekly_mon: true
+  weekly_tue: false
+  weekly_wed: false
+  weekly_thu: true
+  weekly_fri: true
+  weekly_sat: false
+  weekly_sun: false
 two:
   id: 2
