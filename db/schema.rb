@@ -2,19 +2,27 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 6) do
+ActiveRecord::Schema.define(:version => 7) do
+
+  create_table "courses", :force => true do |t|
+    t.column "name", :string
+  end
 
   create_table "events", :force => true do |t|
-    t.column "date",         :date
-    t.column "start_time",   :datetime
-    t.column "end_time",     :datetime
-    t.column "lock_version", :integer,  :default => 0
+    t.column "date",             :date
+    t.column "start_time",       :time
+    t.column "end_time",         :time
+    t.column "schedulable_id",   :integer
+    t.column "schedulable_type", :string
+    t.column "lock_version",     :integer, :default => 0
   end
 
   create_table "eventseries", :force => true do |t|
+    t.column "schedulable_id",    :integer
+    t.column "schedulable_type",  :string
     t.column "start_date",        :date
-    t.column "start_time",        :datetime
-    t.column "end_time",          :datetime
+    t.column "start_time",        :time
+    t.column "end_time",          :time
     t.column "events_count",      :integer
     t.column "end_date",          :date
     t.column "gen_type",          :string

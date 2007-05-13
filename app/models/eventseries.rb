@@ -1,4 +1,44 @@
+# a value-Object
+class WeekSchedule
+  attr_reader :mon, :tue, :wed, :thu, :fri, :sat, :sun
+  @@day_short_names = %w{ Mon Thu Wed Thu Fri Sat Sun}
+  def initialize (mon,tue,wed,thu,fri,sat,sun)
+    @mon = mon,
+    @tue = tue,
+    @wed = wed,
+    @thu = thu,
+    @fri = fri,
+    @sat = sat,
+    @sun = sun
+  end
+
+  def to_s
+    mystring = ""
+    myarray = [@mon, @tue, @wed, @thu, @fri, @sat, @sun]
+    myarray.each_index do |index|
+      myarray[index] and mystring += @@day_short_names[index] + " "
+    end
+    mystring
+  end
+end
+
 class Eventseries < ActiveRecord::Base
+  belongs_to :schedulable, :polymorphic => true
+  
+  composed_of 	:weekschedule,
+  		:class_name => WeekSchedule,
+		:mapping =>
+		  [   # database	ruby
+		    [ :weekly_mon,	:mon ],
+		    [ :weekly_tue,	:tue ],
+		    [ :weekly_wed,	:wed ],
+		    [ :weekly_thu,	:thu ],
+		    [ :weekly_fri,	:fri ],
+		    [ :weekly_sat,	:sat ],
+		    [ :weekly_sun,	:sun ]
+		  ]
+  
+  
   validates_presence_of :start_date
   validates_presence_of :events_count, :if => Proc.new {|es| es.end_date == nil}
   validates_presence_of :end_date, :if => Proc.new {|es| es.events_count == nil}
@@ -19,6 +59,18 @@ class Eventseries < ActiveRecord::Base
   def after_save
     generate
     @eventlist.each {|event| event.save}
+  end
+
+  def to_s
+    me_as_string = ""
+    me_as_string = "Starting from "+start_date.to_s+" "
+    case self.gen_type
+      when "daily"
+	me_as_string += "daily #{self.daily_kind_of_day == 'workday' ? ' (only workdays) ' : '(weekend as well) '}"
+	me_as_string += "#{self.events_count} days long."
+      when "weekly"
+	me_as_string += "each #{self.weekschedule.to_s}#{self.events_count} events"
+    end
   end
 
   private
@@ -47,7 +99,7 @@ class Eventseries < ActiveRecord::Base
     while true
       date = next_event_date week_schema, date
       break if counter == 0 or date > self.end_date
-      @eventlist << Event.new( :date => date, :from => self.start_time, :to => self.end_time)
+      @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time)
       date += (7 * (self.weekly_each - 1)) if last_event_on_week? date, week_schema
       counter -= 1
     end
@@ -58,7 +110,7 @@ class Eventseries < ActiveRecord::Base
     counter = self.events_count
     counter = 0 if counter == nil
     while counter > 0 
-      @eventlist << Event.new( :date => date, :from => self.start_time, :to => self.end_time)
+      @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time)
       counter -=1
       break if counter == 0 or date > self.end_date
       date += self.daily_each
@@ -94,3 +146,5 @@ class Eventseries < ActiveRecord::Base
   end
   
 end
+
+
