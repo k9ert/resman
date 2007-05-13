@@ -5,10 +5,10 @@
 <%= date_select 'event', 'date'  %></p>
 
 <p><label for="event_from">From</label><br/>
-<%= time_select 'event', 'from'  %></p>
+<%= time_select 'event', 'start_time'  %></p>
 
 <p><label for="event_to">To</label><br/>
-<%= time_select 'event', 'to'  %></p>
+<%= time_select 'event', 'end_time'  %></p>
 
 <%= render :partial => 'resources_use_form' %>
 

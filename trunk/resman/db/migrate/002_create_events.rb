@@ -2,8 +2,8 @@ class CreateEvents < ActiveRecord::Migration
   def self.up
     create_table :events do |t|
       t.column :date, :date
-      t.column :from, :time
-      t.column :to, :time
+      t.column :start_time, :time
+      t.column :end_time, :time
     end
   end
 

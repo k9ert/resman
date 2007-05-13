@@ -6,15 +6,15 @@ ActiveRecord::Schema.define(:version => 6) do
 
   create_table "events", :force => true do |t|
     t.column "date",         :date
-    t.column "from",         :time
-    t.column "to",           :time
-    t.column "lock_version", :integer, :default => 0
+    t.column "start_time",   :datetime
+    t.column "end_time",     :datetime
+    t.column "lock_version", :integer,  :default => 0
   end
 
   create_table "eventseries", :force => true do |t|
     t.column "start_date",        :date
-    t.column "start_time",        :time
-    t.column "end_time",          :time
+    t.column "start_time",        :datetime
+    t.column "end_time",          :datetime
     t.column "events_count",      :integer
     t.column "end_date",          :date
     t.column "gen_type",          :string
