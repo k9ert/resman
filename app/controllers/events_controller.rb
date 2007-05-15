@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   layout "standard"
-  
+  include Resman
   def index
     redirect_to :action => 'list'
   end
@@ -10,22 +10,22 @@ class EventsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @event_pages, @events = paginate :events, :per_page => 10
+    @events = Resman::Event.find(:all)
     init_eventseries
   end
 
   def show
-    @event = Event.find(params[:id])
+    @event = Resman::Event.find(params[:id])
     init_eventseries
   end
 
   def new
-    @event = Event.new
+    @event = Resman::Event.new
     init_eventseries
   end
 
   def create
-    @event = Event.new(params[:event])
+    @event = Resman::Event.new(params[:event])
     if @event.save
       flash[:notice] = 'Event was successfully created.'
       redirect_to :action => 'list'
@@ -38,12 +38,12 @@ class EventsController < ApplicationController
   end
 
   def edit
-    @event = Event.find(params[:id])
+    @event = Resman::Event.find(params[:id])
     init_eventseries
   end
 
   def update
-    @event = Event.find(params[:id])
+    @event = Resman::Event.find(params[:id])
     if @event.update_attributes(params[:event])
       flash[:notice] = 'Event was successfully updated.'
       redirect_to :action => 'list'
@@ -55,7 +55,7 @@ class EventsController < ApplicationController
   end
 
   def destroy
-    Event.find(params[:id]).destroy
+    Resman::Event.find(params[:id]).destroy
     init_eventseries
     redirect_to :action => 'list'
   end
@@ -74,6 +74,6 @@ class EventsController < ApplicationController
   private
 
   def init_eventseries
-    @eventseries = Eventseries.new(params[:eventseries])
+    @eventseries = Resman::Eventseries.new(params[:eventseries])
   end
 end

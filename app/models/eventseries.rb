@@ -1,4 +1,4 @@
-#module Resman
+module Resman
   # a value-Object
   class WeekSchedule
     attr_reader :mon, :tue, :wed, :thu, :fri, :sat, :sun
@@ -167,6 +167,6 @@
     end
   
   end
-#end
+end
 
 
