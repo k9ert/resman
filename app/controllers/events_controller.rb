@@ -3,7 +3,8 @@ class EventsController < ApplicationController
   layout "standard"
   include Resman
   def index
-    redirect_to :action => 'list'
+    list
+    render :action => 'list'
   end
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
