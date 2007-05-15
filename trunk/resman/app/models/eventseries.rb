@@ -62,9 +62,10 @@ class Eventseries < ActiveRecord::Base
     true
   end
 
-  def after_create
+  def before_save
+    logger.debug "self.events_count is " + self.events_count.inspect
     generate
-    @eventlist.each {|event| event.save}
+    self.events = @eventlist
   end
 
   def to_s
@@ -101,7 +102,7 @@ class Eventseries < ActiveRecord::Base
 
   def create_weekly
     logger.debug "self.events_count is " + self.events_count.inspect
-    week_schema = [ false, self.weekly_mon, self.weekly_tue, self.weekly_wed, self.weekly_thu, self.weekly_fri, self.weekly_sat, self.weekly_sun]
+    week_schema = [ false, self.week_schedule.mon, self.week_schedule.tue, self.week_schedule.wed, self.week_schedule.thu, self.week_schedule.ri, self.week_schedule.sat, self.week_schedule.sun]
     logger.debug week_schema.inspect
     date = self.start_date - 1 # easier than making an own function like "first_event ..."
     counter = self.events_count
