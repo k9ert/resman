@@ -1,4 +1,5 @@
 module EventsHelper
+  include Resman
 
   def collection_select_multiple(object, method,
 				 collection, value_method, text_method,

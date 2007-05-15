@@ -1,4 +1,6 @@
+
 class CoursesController < ApplicationController
+  include Resman
   layout "standard"
   
   def index
