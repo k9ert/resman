@@ -41,12 +41,17 @@ class Eventseries < ActiveRecord::Base
   
   
   validates_presence_of :start_date
-  validates_presence_of :events_count, :if => Proc.new {|es| es.end_date == nil}
-  validates_presence_of :end_date, :if => Proc.new {|es| es.events_count == nil}
+  #validates_presence_of :events_count, :if => Proc.new {|es| es.end_date == nil}
+  #validates_presence_of :end_date, :if => Proc.new {|es| es.events_count == nil}
+  validates_format_of :end_based_on, :with => /^eventcount|enddate$/
+  validates_format_of :gen_type, :with => /^daily|weekly|monthly|yearly$/
 
   def validate
+    self.weekly_each = 1 if self.weekly_each == nil
+    self.daily_each = 1 if self.daily_each == nil
+    logger.debug "self.events_count is " + self.events_count.inspect
     if self.start_time >= self.end_time
-      errors.add_to_base("start_time should be after end_time")
+      errors.add_to_base("start_time should be before end_time")
       return false
     end
     generate
@@ -67,16 +72,18 @@ class Eventseries < ActiveRecord::Base
     me_as_string = "Starting from "+start_date.to_s+" "
     case self.gen_type
       when "daily"
-	me_as_string += "daily #{self.daily_kind_of_day == 'workday' ? ' (only workdays) ' : '(weekend as well) '}"
-	me_as_string += "#{self.events_count} days long."
+        me_as_string += "daily #{self.daily_kind_of_day == 'workday' ? ' (only workdays) ' : '(weekend as well) '}"
+        me_as_string += "#{self.events_count} days long."
       when "weekly"
-	me_as_string += "each #{self.weekschedule.to_s}#{self.events_count} events"
+        me_as_string += "each #{self.weekschedule.to_s}#{self.events_count} events"
     end
   end
 
   private
   
   def generate
+    logger.debug "Generating ..."
+    logger.debug "self.events_count is " + self.events_count.inspect
     @eventlist = Array.new
     case self.gen_type
       when "daily"
@@ -93,13 +100,19 @@ class Eventseries < ActiveRecord::Base
   end
 
   def create_weekly
+    logger.debug "self.events_count is " + self.events_count.inspect
     week_schema = [ false, self.weekly_mon, self.weekly_tue, self.weekly_wed, self.weekly_thu, self.weekly_fri, self.weekly_sat, self.weekly_sun]
     logger.debug week_schema.inspect
     date = self.start_date - 1 # easier than making an own function like "first_event ..."
     counter = self.events_count
     while true
       date = next_event_date week_schema, date
-      break if counter == 0 or date > self.end_date
+      logger.debug "self.events_count is " + self.events_count.inspect
+      if self.end_based_on == "eventcount"
+        break if counter == 0
+      elsif self.end_based_on == "enddate"
+        break if date > self.end_date
+      end
       @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time, :eventseries_id => self.id, :schedulable => self.schedulable)
       date += (7 * (self.weekly_each - 1)) if last_event_on_week? date, week_schema
       counter -= 1
@@ -113,7 +126,12 @@ class Eventseries < ActiveRecord::Base
     while counter > 0 
       @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time, :eventseries_id => self.id, :schedulable => self.schedulable)
       counter -=1
-      break if counter == 0 or date > self.end_date
+      logger.debug "In create_daily value counter is " + counter.inspect
+      if self.end_based_on == "eventcount"
+        break if counter == 0
+      elsif self.end_based_on == "enddate"
+        break if date > self.end_date
+      end
       date += self.daily_each
       date += self.daily_each while self.daily_kind_of_day == "workday" and (is_workday? date) 
       counter -= 1

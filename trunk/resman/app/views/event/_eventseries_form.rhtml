@@ -2,7 +2,7 @@
 
 <%= form_tag({:action =>"create_eventseries" }, {:name => "eventseries"}) %>
 
-<%= hidden_field_tag(:schedulable_id, schedulable_id) %>
+<%= hidden_field_tag(:schedulable_id, schedulable_id ) %>
 <%= hidden_field_tag(:schedulable_type, schedulable_type) %>
 
 <p><label for="start_date">Start date</label>
@@ -84,7 +84,6 @@ function ShowMenuDailyWeekly(menu)
 }
 
 ShowMenuDailyWeekly(document.eventseries.elements["eventseries[gen_type]"].options[document.eventseries.elements["eventseries[gen_type]"].selectedIndex].value)
-alert(document.eventseries.elements["eventseries[gen_type]"].options[document.eventseries.elements["eventseries[gen_type]"].selectedIndex].value)
 if (document.eventseries.elements["eventseries[end_based_on]"][0].value == true) {
   ShowMenuBasedOn("eventcount") } else 
 if (document.eventseries.elements["eventseries[end_based_on]"][1].value == true) {
