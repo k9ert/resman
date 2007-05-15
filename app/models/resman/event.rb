@@ -1,5 +1,5 @@
 module Resman
-class Resman::Event < ActiveRecord::Base
+class Event < ActiveRecord::Base
   has_many :resource_uses
   has_many :resources, :through => :resource_uses
   has_one :eventseries
