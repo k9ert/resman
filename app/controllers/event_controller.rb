@@ -60,7 +60,7 @@ class EventController < ApplicationController
     redirect_to :action => 'list'
   end
 
-  def mass_create
+  def create_eventseries
     init_eventseries
     if @eventseries.save
       flash[:notice] = 'Event was successfully updated.'

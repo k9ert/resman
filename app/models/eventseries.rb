@@ -24,6 +24,7 @@ end
 
 class Eventseries < ActiveRecord::Base
   belongs_to :schedulable, :polymorphic => true
+  has_many :events
   
   composed_of 	:weekschedule,
   		:class_name => WeekSchedule,
@@ -56,7 +57,7 @@ class Eventseries < ActiveRecord::Base
     true
   end
 
-  def after_save
+  def after_create
     generate
     @eventlist.each {|event| event.save}
   end
@@ -99,7 +100,7 @@ class Eventseries < ActiveRecord::Base
     while true
       date = next_event_date week_schema, date
       break if counter == 0 or date > self.end_date
-      @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time)
+      @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time, :eventseries_id => self.id, :schedulable => self.schedulable)
       date += (7 * (self.weekly_each - 1)) if last_event_on_week? date, week_schema
       counter -= 1
     end
@@ -110,7 +111,7 @@ class Eventseries < ActiveRecord::Base
     counter = self.events_count
     counter = 0 if counter == nil
     while counter > 0 
-      @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time)
+      @eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time, :eventseries_id => self.id, :schedulable => self.schedulable)
       counter -=1
       break if counter == 0 or date > self.end_date
       date += self.daily_each

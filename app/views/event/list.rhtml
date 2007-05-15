@@ -29,6 +29,8 @@
 
 
 <h1>Event-Generator</h1>
-<%= render(:partial => "eventseries_form") %>
+<%= render(:partial => "eventseries_form", :object => @eventseries,
+    :locals => { :schedulable_id => nil, :schedulable_type => nil } )%>
+
 
 

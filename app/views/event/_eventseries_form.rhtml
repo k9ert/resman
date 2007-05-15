@@ -1,10 +1,25 @@
 <%= error_messages_for 'eventseries' %>
 
-<%= form_tag({:action =>"mass_create" }, {:name => "eventseries"}) %>
-<%= submit_tag("generate!") %>
+<%= form_tag({:action =>"create_eventseries" }, {:name => "eventseries"}) %>
+
+<%= hidden_field_tag(:schedulable_id, schedulable_id) %>
+<%= hidden_field_tag(:schedulable_type, schedulable_type) %>
 
 <p><label for="start_date">Start date</label>
 <%= date_select 'eventseries', 'start_date'  %></p>
+
+<input type="radio" <%= eventseries_form == nil ? "checked " : eventseries_form.end_based_on == "eventcount" ? "checked " : "" %> name="eventseries[end_based_on]" value="eventcount" onchange="ShowMenuBasedOn('eventcount')"> Taking X Events<br>
+<input type="radio" <%= eventseries_form == nil ? "" : eventseries_form.end_based_on == "enddate" ? "checked " : "" %> name="eventseries[end_based_on]" value="enddate" onchange="ShowMenuBasedOn('enddate')">until end-Date<br>
+
+<div id="eventcount">
+<p><label for="events_count">How many Events should be generated</label><br/>
+<%= text_field("eventseries", "events_count") %>
+</div>
+
+<div id="enddate">
+<p><label for="events_count">End Date</label><br/>
+<%= date_select 'eventseries', 'end_date'  %></p>
+</div>
 
 <p><label for="event_from">From</label>
 <%= time_select 'eventseries', 'start_time'  %></p>
@@ -12,18 +27,12 @@
 <p><label for="event_to">To</label>
 <%= time_select 'eventseries', 'end_time'  %></p>
 
-<p><label for="events_count">How many Events should be generated</label><br/>
-<%= text_field("eventseries", "events_count") %>
-
-<p><label for="events_count">End Date</label><br/>
-<%= date_select 'eventseries', 'end_date'  %></p>
-
 <p><label for="events_count">Generator Pattern</label><br/>
-<select id="eventseries_gen_type" name="eventseries[gen_type]" onchange="ShowMenu2(this.form.eventseries_gen_type.options[this.form.eventseries_gen_type.selectedIndex].value)">
-<option value="daily">daily</option>
-<option value="weekly">weekly</option>
-<option value="monthly">monthly</option>
-<option value="yearly">yearly</option></select>
+<select id="eventseries_gen_type" name="eventseries[gen_type]" onchange="ShowMenuDailyWeekly(this.form.eventseries_gen_type.options[this.form.eventseries_gen_type.selectedIndex].value)">
+<option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "daily" ? "selected " : ""%>value="daily">daily</option>
+<option <%= eventseries_form == nil ? "selected " : eventseries_form.gen_type == "weekly" ? "selected " : eventseries_form.gen_type == "" ? "selected " : ""%>value="weekly">weekly</option>
+<option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "monthly" ? "selected " : ""%>value="monthly">monthly</option>
+<option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "yearly" ? "selected " : ""%>value="yearly">yearly</option></select>
 
 <div id="daily">
 each <%= text_field("eventseries", "daily_each") %>
@@ -59,7 +68,12 @@ Not yet implemented
 
 <script type="text/javascript">
 <!--
-function ShowMenu2(menu)
+function ShowMenuBasedOn(menu) {
+  document.getElementById("eventcount").style.display = 'none'
+  document.getElementById("enddate").style.display = 'none'
+  document.getElementById(menu).style.display = 'block';
+}
+function ShowMenuDailyWeekly(menu)
 {
   
   document.getElementById("daily").style.display = 'none'
@@ -69,9 +83,19 @@ function ShowMenu2(menu)
   document.getElementById(menu).style.display = 'block';
 }
 
-ShowMenu2(document.eventseries.elements["eventseries[gen_type]"].options[document.eventseries.elements["eventseries[gen_type]"].selectedIndex].value)
+ShowMenuDailyWeekly(document.eventseries.elements["eventseries[gen_type]"].options[document.eventseries.elements["eventseries[gen_type]"].selectedIndex].value)
+alert(document.eventseries.elements["eventseries[gen_type]"].options[document.eventseries.elements["eventseries[gen_type]"].selectedIndex].value)
+if (document.eventseries.elements["eventseries[end_based_on]"][0].value == true) {
+  ShowMenuBasedOn("eventcount") } else 
+if (document.eventseries.elements["eventseries[end_based_on]"][1].value == true) {
+  ShowMenuBasedOn("enddate")
+} else {
+  ShowMenuBasedOn("eventcount")
+}
 -->
 </script>
+
+<%= submit_tag("generate!") %>
 
 <%= end_form_tag %>
 

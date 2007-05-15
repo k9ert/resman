@@ -6,6 +6,7 @@ class CreateEventseries < ActiveRecord::Migration
         t.column :start_date, :date
         t.column :start_time, :time
         t.column :end_time, :time
+        t.column :end_based_on, :string
         t.column :events_count, :integer
         t.column :end_date, :date
         t.column :gen_type, :string
