@@ -1,4 +1,4 @@
-module EventHelper
+module EventsHelper
 
   def collection_select_multiple(object, method,
 				 collection, value_method, text_method,
