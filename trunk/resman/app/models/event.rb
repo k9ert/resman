@@ -1,3 +1,4 @@
+#module Resman
 class Event < ActiveRecord::Base
   has_many :resource_uses
   has_many :resources, :through => :resource_uses
@@ -101,3 +102,5 @@ class Event < ActiveRecord::Base
     @tmp_resource_ids = nil
   end
 end
+
+#end
