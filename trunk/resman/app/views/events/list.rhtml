@@ -2,7 +2,7 @@
 
 <table>
   <tr>
-  <% for column in Event.content_columns %>
+  <% for column in Resman::Event.content_columns %>
     <th><%= column.human_name %></th>
   <% end %>
   <th>Resources</th>
@@ -18,8 +18,6 @@
 <% end %>
 </table>
 
-<%= link_to 'Previous page', { :page => @event_pages.current.previous } if @event_pages.current.previous %>
-<%= link_to 'Next page', { :page => @event_pages.current.next } if @event_pages.current.next %> 
 
 <br />
 

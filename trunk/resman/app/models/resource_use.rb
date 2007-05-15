@@ -1,4 +1,4 @@
-#module Resman
+module Resman
   class ResourceUse < ActiveRecord::Base
     
     belongs_to :event
@@ -146,5 +146,5 @@
       (new_record? ? "": "and resource_uses.id != #{self.id.to_s}")
     end
   end
-#end
+end
 
