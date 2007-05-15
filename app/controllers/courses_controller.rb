@@ -52,4 +52,13 @@ class CoursesController < ApplicationController
     Course.find(params[:id]).destroy
     redirect_to :action => 'list'
   end
+
+  def create_eventseries
+    @eventseries = Resman::Eventseries.new(params[:eventseries])
+      if @eventseries.save
+        flash[:notice] = 'Course was successfully created.'
+        
+      redirect_to :action => 'show'
+    end
+  end
 end

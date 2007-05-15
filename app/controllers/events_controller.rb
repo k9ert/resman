@@ -1,3 +1,4 @@
+include Resman
 class EventsController < ApplicationController
   layout "standard"
   include Resman

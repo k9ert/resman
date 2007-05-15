@@ -1,14 +1,25 @@
+
+
+
+
+
+
+
+
+
 require File.dirname(__FILE__) + '/../test_helper'
-require 'event_controller'
+require 'events_controller'
 
 # Re-raise errors caught by the controller.
-class EventController; def rescue_action(e) raise e end; end
+class EventsController; def rescue_action(e) raise e end; end
 
-class EventControllerTest < Test::Unit::TestCase
+class EventsControllerTest < Test::Unit::TestCase
   fixtures :events
 
+  set_fixture_class :events => Resman::Event
+
   def setup
-    @controller = EventController.new
+    @controller = EventsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
 
@@ -52,7 +63,7 @@ class EventControllerTest < Test::Unit::TestCase
   def test_create
     num_events = Event.count
 
-    post :create, :event => {"to(4i)"=>"16", "from(4i)"=>"08", "date(1i)"=>"2007", "from(5i)"=>"45", "to(5i)"=>"35", "date(2i)"=>"5", "date(3i)"=>"6", "resource_ids"=>["1"], "to(1i)"=>"2000", "from(1i)"=>"2000", "to(2i)"=>"1", "from(2i)"=>"1", "from(3i)"=>"1", "to(3i)"=>"1"}
+    post :create, :event => {"start_time(1i)"=>"2007", "date(1i)"=>"2007", "start_time(2i)"=>"5", "date(2i)"=>"5", "date(3i)"=>"16", "start_time(3i)"=>"16", "start_time(4i)"=>"00", "end_time(1i)"=>"2007", "start_time(5i)"=>"17", "end_time(2i)"=>"5", "end_time(3i)"=>"16", "end_time(4i)"=>"08", "end_time(5i)"=>"17"}
 
     assert assigns["event"] != nil
     assert_response :redirect
@@ -74,7 +85,7 @@ class EventControllerTest < Test::Unit::TestCase
   def test_update
     post :update, :id => @first_id
     assert_response :redirect
-    assert_redirected_to :action => 'show', :id => @first_id
+    assert_redirected_to :action => 'list'
   end
 
   def test_destroy

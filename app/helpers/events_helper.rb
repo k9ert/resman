@@ -21,7 +21,7 @@ module EventsHelper
                                             options = {}, html_options = {})
     collection_select_multiple(
       object, method,
-      Resource.find(:all), :id, :name,
+      Resman::Resource.find(:all), :id, :name,
       options, html_options
     )
   end

@@ -5,31 +5,31 @@ class ResourceUseTest < Test::Unit::TestCase
 
   # Replace this with your real tests.
   def test_collision_democratic
-    ev1 = Event.find(7)
+    ev1 = Resman::Event.find(7)
     ev1.alloc_resource 1
     ev1.save
     assert_equal 1, ev1.resource_uses.size
     assert ev1.resource_uses[0].collision == true
-    ev2 = Event.find(4)
+    ev2 = Resman::Event.find(4)
     assert ev2.resource_uses[0].collision
   end
 
   def test_collision_destroy
-    ev1 = Event.find(7) 
+    ev1 = Resman::Event.find(7) 
     ev1.alloc_resource 1
     ev1.save
     ev1.destroy
-    ev2 = Event.find(4)
+    ev2 = Resman::Event.find(4)
     assert_false ev2.resource_uses[0].collision
   end
 
   def notest_collision_edit
-    ev7 = Event.find(7)
+    ev7 = Resman::Event.find(7)
     ev7.alloc_resource 1
-    ev3 = Event.find(3)
+    ev3 = Resman::Event.find(3)
     ev3.alloc_resource 1
     ev3.save
-    ev4 = Event.find(4)
+    ev4 = Resman::Event.find(4)
     ev4.alloc_resource 1
     ev7.save
     ev4.save
@@ -49,11 +49,11 @@ class ResourceUseTest < Test::Unit::TestCase
 
   def test_collision_no_collission
     ResourceUse.collision_policy = :no_collisions
-    ev1 = Event.find(7)
+    ev1 = Resman::Event.find(7)
     ev1.alloc_resource 1
     #assert_false ev1.save!
     assert_equal 0, ev1.resource_uses.size
-    ev2 = Event.find(4)
+    ev2 = Resman::Event.find(4)
     assert_false ev2.resource_uses[0].collision
   end
 end
