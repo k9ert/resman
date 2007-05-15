@@ -27,7 +27,7 @@ module Resman
     belongs_to :schedulable, :polymorphic => true
     has_many :events
     
-    composed_of 	:weekschedule,
+    composed_of :weekschedule,
 		  :class_name => WeekSchedule,
 		  :mapping =>
 		    [   # database	ruby
