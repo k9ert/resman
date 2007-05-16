@@ -1,5 +1,10 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+first:
   id: 1
+  given_name: Heiner
+  surname: Lauterbach
+  
 two:
   id: 2
+  given_name: Tony
+  surname: Blair
