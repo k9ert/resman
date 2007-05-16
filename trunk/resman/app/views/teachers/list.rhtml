@@ -1,0 +1,27 @@
+<h1>Listing teachers</h1>
+
+<table>
+  <tr>
+  <% for column in Teacher.content_columns %>
+    <th><%= column.human_name %></th>
+  <% end %>
+  </tr>
+  
+<% for teacher in @teachers %>
+  <tr>
+  <% for column in Teacher.content_columns %>
+    <td><%=h teacher.send(column.name) %></td>
+  <% end %>
+    <td><%= link_to 'Show', :action => 'show', :id => teacher %></td>
+    <td><%= link_to 'Edit', :action => 'edit', :id => teacher %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => teacher }, :confirm => 'Are you sure?', :method => :post %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Previous page', { :page => @teacher_pages.current.previous } if @teacher_pages.current.previous %>
+<%= link_to 'Next page', { :page => @teacher_pages.current.next } if @teacher_pages.current.next %> 
+
+<br />
+
+<%= link_to 'New teacher', :action => 'new' %>
