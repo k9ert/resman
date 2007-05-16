@@ -55,10 +55,12 @@ class CoursesController < ApplicationController
 
   def create_eventseries
     @eventseries = Resman::Eventseries.new(params[:eventseries])
-      if @eventseries.save
-        flash[:notice] = 'Course was successfully created.'
-        
-      redirect_to :action => 'show'
+    @course = Course.find(params[:schedulable_id])
+    @eventseries.schedulable = @course
+    if @eventseries.save
+      flash[:notice] = 'Events were successfully updated.'
     end
+    render :action => 'show', :id => params[:schedulable_id]
   end
+  
 end
