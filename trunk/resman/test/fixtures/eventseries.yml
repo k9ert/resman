@@ -2,8 +2,8 @@
 one:
   id: 1
   start_date: 2007-07-07
-  start_time: 12:50
-  end_time: 13:50
+  start_time: "12:50"
+  end_time: "13:50"
   events_count: 9
   end_date: 2007-07-09
   gen_type: weekly

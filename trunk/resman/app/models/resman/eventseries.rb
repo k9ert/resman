@@ -2,25 +2,46 @@ module Resman
   # a value-Object
   class WeekSchedule
     attr_reader :mon, :tue, :wed, :thu, :fri, :sat, :sun
-    @@day_short_names = %w{ Mon Thu Wed Thu Fri Sat Sun}
-    def initialize (mon,tue,wed,thu,fri,sat,sun)
-      @mon = mon,
-      @tue = tue,
-      @wed = wed,
-      @thu = thu,
-      @fri = fri,
-      @sat = sat,
-      @sun = sun
+    @@day_short_names_a = %w{ Mon Tue Wed Thu Fri Sat Sun}
+    @@day_short_names_h = { :mon => 0, :tue => 1,  :wed => 2, :thu => 3, :fri => 4, :sat => 6, :sun => 7}
+    
+    def initialize (*args)
+      @dayhash = Hash.new(false)
+      if args[0].class == Hash
+        @dayhash = args[0]
+      elsif args[0].class == Array
+        args[0].each_index do |i|
+          @dayhash[@@day_short_names_a[i].downcase.to_sym] = args[i]
+        end
+      elsif args.size == 7 and args.class == Array
+        args.each_index do |i|
+          @dayhash[@@day_short_names_a[i].downcase.to_sym] = args[i]
+        end
+      elsif
+        raise "wrong arguments in initialize"
+      end
     end
+    def method_missing symbol
+      @dayhash[symbol] or raise "dont know this day" + symbol.to_s
+      return @dayhash[symbol]
+    end
+    
+    # set the comercialweekday to the given boolean
+    # Monday is 1, Sunday is 7
+    #def set_wday wday, myboolean
+    #   self.send((@@day_short_names[wday] + "=").downcase.to_sym,  myboolean)
+    #end
   
     def to_s
-      mystring = ""
-      myarray = [@mon, @tue, @wed, @thu, @fri, @sat, @sun]
-      myarray.each_index do |index|
-	myarray[index] and mystring += @@day_short_names[index] + " "
+      myarray = Array.new
+      @@day_short_names_a.each_index do |i|
+        myarray << @@day_short_names_a[i] if @dayhash[@@day_short_names_a[i].downcase.to_sym] == true
       end
-      mystring
+      myarray.join(" ")
     end
+
+    private
+    
   end
   
   class Eventseries < ActiveRecord::Base
@@ -77,7 +98,7 @@ module Resman
 	  me_as_string += "daily #{self.daily_kind_of_day == 'workday' ? ' (only workdays) ' : '(weekend as well) '}"
 	  me_as_string += "#{self.events_count} days long."
 	when "weekly"
-	  me_as_string += "each #{self.weekschedule.to_s}#{self.events_count} events"
+	  me_as_string += "each #{self.weekschedule.to_s} #{self.events_count} events"
       end
     end
   
