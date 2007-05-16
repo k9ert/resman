@@ -103,7 +103,7 @@ module Resman
   
     def create_weekly
       logger.debug "self.events_count is " + self.events_count.inspect
-      week_schema = [ false, self.week_schedule.mon, self.week_schedule.tue, self.week_schedule.wed, self.week_schedule.thu, self.week_schedule.ri, self.week_schedule.sat, self.week_schedule.sun]
+      week_schema = [ false, self.weekschedule.mon, self.weekschedule.tue, self.weekschedule.wed, self.weekschedule.thu, self.weekschedule.ri, self.weekschedule.sat, self.weekschedule.sun]
       logger.debug week_schema.inspect
       date = self.start_date - 1 # easier than making an own function like "first_event ..."
       counter = self.events_count
