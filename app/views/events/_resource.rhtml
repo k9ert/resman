@@ -1,0 +1,17 @@
+
+<%= error_messages_for 'resource' %>
+
+<%= form_tag({:action =>"update_resource" }, {:name => "resource"}) %>
+
+<%= hidden_field_tag(:allocatable_id, allocatable_id ) %>
+<%= hidden_field_tag(:allocatable_type, allocatable_type) %>
+
+<p><label for="name">Name</label>
+<%= text_field("resource", "name") %>
+<input type="checkbox" name="publish_as_resource" value="1" <%= @resource == nil ? "":"checked" %> ><br>
+
+
+<%= submit_tag("Update") %>
+
+<%= end_form_tag %>
+
