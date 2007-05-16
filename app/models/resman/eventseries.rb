@@ -1,14 +1,16 @@
 module Resman
   # a value-Object
   class WeekSchedule
-    attr_reader :mon, :tue, :wed, :thu, :fri, :sat, :sun
     @@day_short_names_a = %w{ Mon Tue Wed Thu Fri Sat Sun}
     @@day_short_names_h = { :mon => 0, :tue => 1,  :wed => 2, :thu => 3, :fri => 4, :sat => 6, :sun => 7}
+    @@empty_hash = { :mon => false, :tue => false,  :wed => false, :thu => false, :fri => false, :sat => false, :sun => false }
     
     def initialize (*args)
-      @dayhash = Hash.new(false)
+      @dayhash = @@empty_hash.dup
       if args[0].class == Hash
-        @dayhash = args[0]
+        args[0].each do |key,value|
+          @dayhash[key] = value
+        end
       elsif args[0].class == Array
         args[0].each_index do |i|
           @dayhash[@@day_short_names_a[i].downcase.to_sym] = args[i]
@@ -22,8 +24,8 @@ module Resman
       end
     end
     def method_missing symbol
-      @dayhash[symbol] or raise "dont know this day" + symbol.to_s
-      return @dayhash[symbol]
+      @dayhash.has_key?  symbol or raise "dont know this day" + symbol.to_s
+      @dayhash[symbol]
     end
     
     # set the comercialweekday to the given boolean
@@ -71,10 +73,17 @@ module Resman
     def validate
       self.weekly_each = 1 if self.weekly_each == nil
       self.daily_each = 1 if self.daily_each == nil
+      self.events_count = 0 if self.events_count == nil
       logger.debug "self.events_count is " + self.events_count.inspect
       if self.start_time >= self.end_time
 	errors.add_to_base("start_time should be before end_time")
 	return false
+      end
+      if self.end_based_on == "enddate"
+        if self.start_date <= self.end_date
+          	errors.add_to_base("start_date should be before end_date")
+            return false
+        end
       end
       generate
       if @eventlist.size == 0
@@ -82,6 +91,17 @@ module Resman
 	return false
       end
       true
+    end
+
+    def Eventseries.create_weekly_until(start_date, end_date, start_time, end_time, weekschedule)
+        Eventseries.new(:start_date => start_date,
+                        :end_date   => end_time,
+                        :start_time => start_time,
+                        :end_time   => end_time,
+                        :end_based_on => "enddate",
+                        :gen_type    => "weekly",
+                        :weekly_each=> 1,
+                        :weekschedule => weekschedule)
     end
   
     def before_save
@@ -123,9 +143,11 @@ module Resman
     end
   
     def create_weekly
+      logger.debug "Entering create_weekly ..."
       logger.debug "self.events_count is " + self.events_count.inspect
+      logger.debug "self.weekschedule.mon is " + self.weekschedule.mon.to_s + ":"
       week_schema = [ false, self.weekschedule.mon, self.weekschedule.tue, self.weekschedule.wed, self.weekschedule.thu, self.weekschedule.fri, self.weekschedule.sat, self.weekschedule.sun]
-      logger.debug week_schema.inspect
+      logger.debug "week_schema is: " + week_schema.inspect
       date = self.start_date - 1 # easier than making an own function like "first_event ..."
       counter = self.events_count
       while true
@@ -166,11 +188,11 @@ module Resman
       date += 1 # We want the NEXT date
       
       logger.debug "and week_schema of " + week_schema.inspect
-      (date.cwday..13).each do |i|
+      (date.cwday..14).each do |i|
 	return date if week_schema[i > 7 ? i-7 : i]
 	date += 1
       end
-      raise "should not happend"
+      raise "should not happend. date is #{date.to_s} \nweek_schema is #{week_schema.inspect}"
     end
   
     def last_event_on_week? date, week_schema

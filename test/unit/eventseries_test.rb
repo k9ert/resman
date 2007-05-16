@@ -15,7 +15,7 @@ class EventseriesTest < Test::Unit::TestCase
   end
 
   def test_week_schedule3
-     ws = Resman::WeekSchedule.new([false,true,true,false,false,true,false])
+     ws = Resman::WeekSchedule.new(*[false,true,true,false,false,true,false])
      assert_equal "Tue Wed Sat", ws.to_s
   end
 
@@ -24,10 +24,15 @@ class EventseriesTest < Test::Unit::TestCase
                            :thu => false, :fri => false,:sat => true)
      assert_equal "Tue Wed Sat", ws.to_s
   end
-  
 
-  
-
+  def test_week_schedule_stupid_name
+     ws = Resman::WeekSchedule.new(:tue => true, :wed => true,:sat => true)
+    es = Resman::Eventseries.create_weekly_until(Date.today, Date.today+30, DateTime.now, DateTime.now+60, ws )
+    puts "Errors of es:" + es.errors.inject("") {|e,a| e += a.to_s } + ""
+    assert(es.weekschedule.tue)
+    assert_false(es.weekschedule.mon)
+    assert es.valid?
+  end
 
   def test_event_series_to_s
     es = Resman::Eventseries.find(1)
