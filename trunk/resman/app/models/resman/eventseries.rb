@@ -74,28 +74,27 @@ module Resman
       self.weekly_each = 1 if self.weekly_each == nil
       self.daily_each = 1 if self.daily_each == nil
       self.events_count = 0 if self.events_count == nil
-      logger.debug "self.events_count is " + self.events_count.inspect
       if self.start_time >= self.end_time
-	errors.add_to_base("start_time should be before end_time")
-	return false
+        errors.add_to_base("start_time should be before end_time")
+        return false
       end
       if self.end_based_on == "enddate"
-        if self.start_date <= self.end_date
+        if self.start_date >= self.end_date
           	errors.add_to_base("start_date should be before end_date")
             return false
         end
       end
       generate
       if @eventlist.size == 0
-	errors.add_to_base("At least one Event should get generated")
-	return false
+        errors.add_to_base("At least one Event should get generated")
+        return false
       end
       true
     end
 
     def Eventseries.create_weekly_until(start_date, end_date, start_time, end_time, weekschedule)
-        Eventseries.new(:start_date => start_date,
-                        :end_date   => end_time,
+      Eventseries.new(:start_date => start_date,
+                        :end_date   => end_date,
                         :start_time => start_time,
                         :end_time   => end_time,
                         :end_based_on => "enddate",
@@ -143,11 +142,7 @@ module Resman
     end
   
     def create_weekly
-      logger.debug "Entering create_weekly ..."
-      logger.debug "self.events_count is " + self.events_count.inspect
-      logger.debug "self.weekschedule.mon is " + self.weekschedule.mon.to_s + ":"
       week_schema = [ false, self.weekschedule.mon, self.weekschedule.tue, self.weekschedule.wed, self.weekschedule.thu, self.weekschedule.fri, self.weekschedule.sat, self.weekschedule.sun]
-      logger.debug "week_schema is: " + week_schema.inspect
       date = self.start_date - 1 # easier than making an own function like "first_event ..."
       counter = self.events_count
       while true

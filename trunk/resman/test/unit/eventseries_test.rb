@@ -27,8 +27,7 @@ class EventseriesTest < Test::Unit::TestCase
 
   def test_week_schedule_stupid_name
      ws = Resman::WeekSchedule.new(:tue => true, :wed => true,:sat => true)
-    es = Resman::Eventseries.create_weekly_until(Date.today, Date.today+30, DateTime.now, DateTime.now+60, ws )
-    puts "Errors of es:" + es.errors.inject("") {|e,a| e += a.to_s } + ""
+    es = Resman::Eventseries.create_weekly_until(Date.today, (Date.today)+30, DateTime.now, DateTime.now+60, ws )
     assert(es.weekschedule.tue)
     assert_false(es.weekschedule.mon)
     assert es.valid?
