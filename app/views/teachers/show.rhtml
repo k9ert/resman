@@ -1,0 +1,11 @@
+<% for column in Teacher.content_columns %>
+<p>
+  <b><%= column.human_name %>:</b> <%=h @teacher.send(column.name) %>
+</p>
+<% end %>
+
+<%= render :partial => "events/resource", 
+           :locals => { :allocatable_id => @teacher.id, :allocatable_type => @teacher.class.to_s } %>
+
+<%= link_to 'Edit', :action => 'edit', :id => @teacher %> |
+<%= link_to 'Back', :action => 'list' %>

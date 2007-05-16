@@ -106,6 +106,7 @@ module Resman
   
     def after_destroy
       puts "destroying ......"
+      backup_event_data
       release_old_collisions
     end
   
