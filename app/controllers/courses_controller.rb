@@ -49,7 +49,7 @@ class CoursesController < ApplicationController
   end
 
   def destroy
-    Course.find(params[:id]).destroy
+    Course.destroy(params[:id])
     redirect_to :action => 'list'
   end
 
@@ -62,5 +62,20 @@ class CoursesController < ApplicationController
     end
     render :action => 'show', :id => params[:schedulable_id]
   end
+
+  def destroy_eventseries
+    Eventseries.find(params[:id]).destroy
+    redirect_to :action => "show"
+  end
+  
+  def destroy_event
+    redirect_to :controller => "events", :action => "destroy", :id => params[:id]
+  end
+
+  def edit_event
+    redirect_to :controller => "events", :action => "edit", :id => params[:id]
+  end
+
+  
   
 end

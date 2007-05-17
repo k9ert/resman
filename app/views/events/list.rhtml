@@ -2,18 +2,16 @@
 
 <table>
   <tr>
-  <% for column in Resman::Event.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
-  <th>Resources</th>
+   <th>Date</th>
+   <th>start_time</th>
+   <th>end_time</th>
+   <th>Resources</th>
+   <th>Actions</th>
   </tr>
   
 <% for event in @events %>
   <tr>
-  <%= render :partial => "event", :object => event %>
-    <td><%= link_to 'Show', :action => 'show', :id => event %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => event %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => event }, :confirm => 'Are you sure?', :method => :post %></td>
+  <%= render :partial => "event", :object => event, :locals => { :tool_links => true} %>
   </tr>
 <% end %>
 </table>

@@ -1,7 +1,11 @@
+<tr>
 <td><%= date_string event.date %> </td>
 <td><%= time_string event.start_time %> </td>
 <td><%= time_string event.end_time %> </td>
 <td><% for resource_use in event.resource_uses %>
       <%= render_resource_name resource_use  %>
     <% end %>
- </td>
+</td>
+<td><%= link_to('Edit', { :action => 'edit_event', :id => event }, :method => :post) if defined?(tool_links) and tool_links %> </td>
+<td><%= link_to('Destroy', { :action => 'destroy_event', :id => event }, :confirm => 'Are you sure?', :method => :post) if defined?(tool_links) and tool_links %> </td>
+</tr>

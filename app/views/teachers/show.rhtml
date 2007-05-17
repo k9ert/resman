@@ -4,8 +4,9 @@
 </p>
 <% end %>
 
+<table>
 <%= render :partial => "events/resource", 
            :locals => { :allocatable_id => @teacher.id, :allocatable_type => @teacher.class.to_s } %>
-
+</table>
 <%= link_to 'Edit', :action => 'edit', :id => @teacher %> |
 <%= link_to 'Back', :action => 'list' %>

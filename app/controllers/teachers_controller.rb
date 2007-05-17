@@ -57,20 +57,12 @@ class TeachersController < ApplicationController
     if params[:publish_as_resource] != "1"
       @teacher.resource != nil and @teacher.resource.destroy
     elsif @teacher.resource == nil
-      logger.debug "should get created !!!"
-      logger.debug "params[:resource => :name] is " + (params[:resource]).to_s
       @teacher.resource = Resman::Resource.new(:name => params[:resource][:name])
-      logger.debug "XXXXXXXXXXXXXXXresource is " + @teacher.resource.inspect
-      logger.debug "saving ..."
       @teacher.resource.save
-      logger.debug "... saved: " + @teacher.resource.new_record?.to_s
       @teacher.save
     else
-      logger.debug "Already saved ... updating"
       @teacher.resource.name = params[:resource][:name]
-      logger.debug "name updated ...saving"
       @teacher.resource.save
-      logger.debug "saved!"
     end
     @resource = @teacher.resource
     redirect_to :action => 'show', :id => @teacher

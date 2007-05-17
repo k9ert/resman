@@ -47,8 +47,9 @@ module Resman
   end
   
   class Eventseries < ActiveRecord::Base
+    has_many :events, :dependent => :destroy
     belongs_to :schedulable, :polymorphic => true
-    has_many :events
+    #before_destroy {|es| es.events.each {|ev| ev.destroy}
     
     composed_of :weekschedule,
 		  :class_name => WeekSchedule,
@@ -73,16 +74,20 @@ module Resman
     def validate
       self.weekly_each = 1 if self.weekly_each == nil
       self.daily_each = 1 if self.daily_each == nil
-      self.events_count = 0 if self.events_count == nil
       if self.start_time >= self.end_time
         errors.add_to_base("start_time should be before end_time")
         return false
       end
       if self.end_based_on == "enddate"
         if self.start_date >= self.end_date
-          	errors.add_to_base("start_date should be before end_date")
+            errors.add_to_base("start_date should be before end_date")
             return false
         end
+      elsif self.end_based_on == "events_count"
+	if self.events_count==nil or self.events_count<=0
+	  errors.add_to_base("How many events should get generated?")
+	  return false
+	end
       end
       generate
       if @eventlist.size == 0
@@ -90,6 +95,17 @@ module Resman
         return false
       end
       true
+    end
+    def before_save
+      logger.debug "self.events_count is " + self.events_count.inspect
+      generate
+      self.events = @eventlist
+    end
+
+    def before_destroy
+      logger.debug "Destroying all corresponding events ..."
+      self.events.each {|ev| ev.destroy}
+      logger.debug "...Done"
     end
 
     def Eventseries.create_weekly_until(start_date, end_date, start_time, end_time, weekschedule)
@@ -103,12 +119,22 @@ module Resman
                         :weekschedule => weekschedule)
     end
   
-    def before_save
-      logger.debug "self.events_count is " + self.events_count.inspect
-      generate
-      self.events = @eventlist
+
+
+    def after_destroy
+      
+      puts "XXXXXXXXXXXXXXXXXXXXXXXXXXXXafterDestroyXXXXXXXXXXXXXXX"
+      logger.debug "after detroy is called!"
     end
-  
+
+    def resource_ids
+      @resource_ids ||= []
+    end
+
+    def resource_ids=(value)
+      @resource_ids = value
+    end
+
     def to_s
       me_as_string = ""
       me_as_string = "Starting from "+start_date.to_s+" "
@@ -124,8 +150,6 @@ module Resman
     private
     
     def generate
-      logger.debug "Generating ..."
-      logger.debug "self.events_count is " + self.events_count.inspect
       @eventlist = Array.new
       case self.gen_type
 	when "daily"
@@ -153,7 +177,7 @@ module Resman
 	elsif self.end_based_on == "enddate"
 	  break if date > self.end_date
 	end
-	@eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time, :eventseries_id => self.id, :schedulable => self.schedulable)
+	@eventlist << new_event(date)
 	date += (7 * (self.weekly_each - 1)) if last_event_on_week? date, week_schema
 	counter -= 1
       end
@@ -164,9 +188,8 @@ module Resman
       counter = self.events_count
       counter = 0 if counter == nil
       while counter > 0 
-	@eventlist << Event.new( :date => date, :start_time => self.start_time, :end_time => self.end_time, :eventseries_id => self.id, :schedulable => self.schedulable)
+	@eventlist << new_event(date)
 	counter -=1
-	logger.debug "In create_daily value counter is " + counter.inspect
 	if self.end_based_on == "eventcount"
 	  break if counter == 0
 	elsif self.end_based_on == "enddate"
@@ -179,7 +202,6 @@ module Resman
     end
   
     def next_event_date week_schema, date
-      logger.debug "try to find next date for " + date.to_s
       date += 1 # We want the NEXT date
       
       logger.debug "and week_schema of " + week_schema.inspect
@@ -191,8 +213,6 @@ module Resman
     end
   
     def last_event_on_week? date, week_schema
-      logger.debug "In last_event_on_week value date is " + date.to_s
-      logger.debug "this date is day " + date.cwday.to_s + " of week"
       (date.cwday..7).to_a.reverse.each do |i|
 	next if not week_schema[i]
 	return date.cwday == i
@@ -202,6 +222,16 @@ module Resman
   
     def is_workday? date
       false if date.cwday == 7 or date.cwday == 6
+    end
+
+    def new_event(date)
+      Event.new(:date => date, 
+      		:start_time => self.start_time,
+		:end_time => self.end_time, 
+		:eventseries_id => self.id, 
+		:schedulable => self.schedulable,
+		:resource_ids => self.resource_ids)
+      
     end
   
   end
