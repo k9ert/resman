@@ -1,70 +1,79 @@
 <%= error_messages_for 'eventseries' %>
-
+<table border="1">
 <%= form_tag({:action =>"create_eventseries" }, {:name => "eventseries"}) %>
 
 <%= hidden_field_tag(:schedulable_id, schedulable_id ) %>
 <%= hidden_field_tag(:schedulable_type, schedulable_type) %>
 
-<p><label for="start_date">Start date</label>
-<%= date_select 'eventseries', 'start_date'  %></p>
+<tr><td>
+  <p><label for="start_date">Start date</label>
+  <%= date_select 'eventseries', 'start_date'  %></p>
+ </td>
+ <td rowspan=4><%= render :partial => "events/resources_use_form", :locals => {:form_name => "eventseries"}  %></td>
+</tr>
+<tr><td>
+  <input type="radio" <%= eventseries_form == nil ? "checked " : eventseries_form.end_based_on == "eventcount" ? "checked " : "" %> name="eventseries[end_based_on]" value="eventcount" onchange="ShowMenuBasedOn('eventcount')"> Taking X Events<br>
+  <input type="radio" <%= eventseries_form == nil ? "" : eventseries_form.end_based_on == "enddate" ? "checked " : "" %> name="eventseries[end_based_on]" value="enddate" onchange="ShowMenuBasedOn('enddate')">until end-Date<br>
 
-<input type="radio" <%= eventseries_form == nil ? "checked " : eventseries_form.end_based_on == "eventcount" ? "checked " : "" %> name="eventseries[end_based_on]" value="eventcount" onchange="ShowMenuBasedOn('eventcount')"> Taking X Events<br>
-<input type="radio" <%= eventseries_form == nil ? "" : eventseries_form.end_based_on == "enddate" ? "checked " : "" %> name="eventseries[end_based_on]" value="enddate" onchange="ShowMenuBasedOn('enddate')">until end-Date<br>
+  <div id="eventcount">
+  <p><label for="events_count">How many Events should be generated</label><br/>
+  <%= text_field("eventseries", "events_count") %>
+  </div>
 
-<div id="eventcount">
-<p><label for="events_count">How many Events should be generated</label><br/>
-<%= text_field("eventseries", "events_count") %>
-</div>
+  <div id="enddate">
+  <p><label for="events_count">End Date</label><br/>
+  <%= date_select 'eventseries', 'end_date'  %></p>
+  </div>
+</td><td></td>
+</tr>
+<tr><td colspan=2>
+  <p><label for="event_from">From</label><br>
+  <%= time_select 'eventseries', 'start_time'  %></p>
 
-<div id="enddate">
-<p><label for="events_count">End Date</label><br/>
-<%= date_select 'eventseries', 'end_date'  %></p>
-</div>
+  <p><label for="event_to">To</label><br>
+  <%= time_select 'eventseries', 'end_time'  %></p>
+  </td>
+</tr>
 
-<p><label for="event_from">From</label>
-<%= time_select 'eventseries', 'start_time'  %></p>
+<tr><td>
+  <p><label for="events_count">Generator Pattern</label><br/>
+  <select id="eventseries_gen_type" name="eventseries[gen_type]" onchange="ShowMenuDailyWeekly(this.form.eventseries_gen_type.options[this.form.eventseries_gen_type.selectedIndex].value)">
+  <option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "daily" ? "selected " : ""%>value="daily">daily</option>
+  <option <%= eventseries_form == nil ? "selected " : eventseries_form.gen_type == "weekly" ? "selected " : eventseries_form.gen_type == "" ? "selected " : ""%>value="weekly">weekly</option>
+  <option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "monthly" ? "selected " : ""%>value="monthly">monthly</option>
+  <option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "yearly" ? "selected " : ""%>value="yearly">yearly</option></select>
 
-<p><label for="event_to">To</label>
-<%= time_select 'eventseries', 'end_time'  %></p>
+  <div id="daily">
+  each <%= text_field("eventseries", "daily_each") %>
+  <%= select("eventseries", "daily_kind_of_day", %w{day workday}) %>
+  </div>
 
-<p><label for="events_count">Generator Pattern</label><br/>
-<select id="eventseries_gen_type" name="eventseries[gen_type]" onchange="ShowMenuDailyWeekly(this.form.eventseries_gen_type.options[this.form.eventseries_gen_type.selectedIndex].value)">
-<option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "daily" ? "selected " : ""%>value="daily">daily</option>
-<option <%= eventseries_form == nil ? "selected " : eventseries_form.gen_type == "weekly" ? "selected " : eventseries_form.gen_type == "" ? "selected " : ""%>value="weekly">weekly</option>
-<option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "monthly" ? "selected " : ""%>value="monthly">monthly</option>
-<option <%= eventseries_form == nil ? "" : eventseries_form.gen_type == "yearly" ? "selected " : ""%>value="yearly">yearly</option></select>
+  <div id="weekly">
+  Each <%= text_field("eventseries", "weekly_each") %> Weeks <br>
+  <%= check_box("eventseries", "weekly_mon") %>
+  Monday
+  <%= check_box("eventseries", "weekly_tue") %>
+  Tuesday
+  <%= check_box("eventseries", "weekly_wed") %>
+  Wednesday
+  <%= check_box("eventseries", "weekly_thu") %>
+  Thursday
+  <%= check_box("eventseries", "weekly_fri") %>
+  Friday<br>
+  <%= check_box("eventseries", "weekly_sat") %>
+  Saturday
+  <%= check_box("eventseries", "weekly_sun") %>
+  Sunday
+  </div>
 
-<div id="daily">
-each <%= text_field("eventseries", "daily_each") %>
-<%= select("eventseries", "daily_kind_of_day", %w{day workday}) %>
-</div>
+  <div id="monthly">
+  Not yet implemented
+  </div>
 
-<div id="weekly">
-Each <%= text_field("eventseries", "weekly_each") %> Weeks <br>
-<%= check_box("eventseries", "weekly_mon") %>
-Monday
-<%= check_box("eventseries", "weekly_tue") %>
-Tuesday
-<%= check_box("eventseries", "weekly_wed") %>
-Wednesday
-<%= check_box("eventseries", "weekly_thu") %>
-Thursday
-<%= check_box("eventseries", "weekly_fri") %>
-Friday
-<%= check_box("eventseries", "weekly_sat") %>
-Saturday
-<%= check_box("eventseries", "weekly_sun") %>
-Sunday
-
-</div>
-
-<div id="monthly">
-Not yet implemented
-</div>
-
-<div id="yearly">
-Not yet implemented
-</div>
+  <div id="yearly">
+  Not yet implemented
+  </div>
+</td></tr>
 
 <script type="text/javascript">
 <!--
@@ -94,7 +103,9 @@ if (document.eventseries.elements["eventseries[end_based_on]"][1].value == true)
 -->
 </script>
 
+
+
 <%= submit_tag("generate!") %>
 
 <%= end_form_tag %>
-
+</table>

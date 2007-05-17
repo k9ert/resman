@@ -1,18 +1,19 @@
-<h1>Listing courses</h1>
+<h1>Listing Courses</h1>
 
 <table>
   <tr>
   <% for column in Course.content_columns %>
     <th><%= column.human_name %></th>
   <% end %>
+  <th>Eventseries</th>
   </tr>
   
 <% for course in @courses %>
   <tr>
   <% for column in Course.content_columns %>
     <td><%=h course.send(column.name) %></td>
-    <td><%= course.eventseries.each {|es| es.to_s} %>
   <% end %>
+  <td><%= course.eventseries.inject("") {|mystring, es| mystring += es.to_s + "<br>" }.to_s %></td>
     <td><%= link_to 'Show', :action => 'show', :id => course %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => course %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => course }, :confirm => 'Are you sure?', :method => :post %></td>

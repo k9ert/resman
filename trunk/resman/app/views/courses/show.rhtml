@@ -4,12 +4,18 @@
 </p>
 <% end %>
 
-<%= @course.eventseries.each {|es| es.to_s + "<br>"} %>
+<table>
+<%= render :partial => "events/eventseries", :collection => @course.eventseries,
+	:locals => {:tool_links => true }%>
+</table>
 
 <%= render :partial => "events/eventseries_form", :object=> nil,
-	:locals => { :schedulable_id => @course.id, :schedulable_type => "course" } %>
+	:locals => { :schedulable_id => @course.id, :schedulable_type => "course"} %>
 
 <%= link_to 'Edit', :action => 'edit', :id => @course %> |
 <%= link_to 'Back', :action => 'list' %>
 
-<%= render(:partial => "events/event", :collection => @course.events) %>
+<table>
+<th>Date</th><th>start_time</th><th>end_time</th><th>resources</th>
+<%= render(:partial => "events/event", :collection => @course.events, :locals => { :tool_links => true} ) %>
+</table>

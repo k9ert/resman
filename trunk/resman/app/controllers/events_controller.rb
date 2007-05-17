@@ -39,6 +39,8 @@ class EventsController < ApplicationController
     init_eventseries
   end
 
+  alias edit edit_event
+  
   def edit
     @event = Resman::Event.find(params[:id])
     init_eventseries
@@ -56,6 +58,10 @@ class EventsController < ApplicationController
     init_eventseries
   end
 
+  def destroy_event
+    destroy
+  end
+  
   def destroy
     Resman::Event.find(params[:id]).destroy
     init_eventseries
