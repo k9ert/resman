@@ -38,8 +38,6 @@ class EventsController < ApplicationController
     end
     init_eventseries
   end
-
-  alias edit edit_event
   
   def edit
     @event = Resman::Event.find(params[:id])
