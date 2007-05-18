@@ -1,6 +1,5 @@
 
 class CoursesController < ApplicationController
-  include Resman
   layout "standard"
   
   def index
@@ -64,19 +63,46 @@ class CoursesController < ApplicationController
   end
 
   def destroy_eventseries
-    Eventseries.find(params[:id]).destroy
-    redirect_to :action => "show"
+    es = Resman::Eventseries.find(params[:id])
+    es.destroy
+    redirect_to :action => "show", :id => es.schedulable.id
   end
   
+  def new_event
+    @course = Course.find(params[:id])
+    @event = Resman::Event.new
+    @event.schedulable = @course
+    render :template => "events/new_event"
+  end
+  
+  def create_event
+    @event = Resman::Event.new(params[:event])
+    if @event.save
+      flash[:notice] = 'Event was successfully created.'
+      redirect_to :action => 'show', :id => @event.schedulable.id
+    else
+      render :template => 'events/new_event'
+    end
+  end
+    
+  def edit_event
+    @event = Resman::Event.find(params[:id])
+    render :template => "events/edit_event"
+  end
+
+  def update_event
+    @event = Resman::Event.find(params[:id])
+    if @event.update_attributes(params[:event])
+      flash[:notice] = 'Event was successfully updated.'
+      redirect_to :action => 'show', :id => @event.schedulable.id
+    else
+      puts "Update fails"
+      render :action => 'edit_event'
+    end
+  end
+
   def destroy_event
     event =  Resman::Event.find(params[:id]).destroy
     redirect_to :action => 'show', :id => event.schedulable.id
   end
-
-  def edit_event
-    redirect_to :controller => "events", :action => "edit", :id => params[:id]
-  end
-
-  
-  
 end

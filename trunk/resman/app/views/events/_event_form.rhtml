@@ -1,5 +1,8 @@
 <%= error_messages_for 'event' %>
 
+<%= hidden_field("event", "schedulable_id") %>
+<%= hidden_field("event", "schedulable_type") %>
+
 <!--[form:event]-->
 <p><label for="event_date">Date</label><br/>
 <%= date_select 'event', 'date'  %></p>
@@ -10,7 +13,7 @@
 <p><label for="event_to">To</label><br/>
 <%= time_select 'event', 'end_time'  %></p>
 
-<%= render :partial => 'resources_use_form' %>
+<%= render :partial => 'events/resources_use_form' %>
 
 
 <!--[eoform:event]-->

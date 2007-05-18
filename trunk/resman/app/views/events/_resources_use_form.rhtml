@@ -1,2 +1,2 @@
 <p><label for="event_resource_uses">Resources</label><br/>
-<%= collection_select_multiple_resource_uses (defined?(form_name) ? form_name.to_sym : :event), :resources %>
+<%= collection_select_multiple_resource_uses (defined?(form_name) and form_name != nil ? form_name.to_sym : :event), :resources %>
