@@ -1,0 +1,4 @@
+<tr>
+<td><%= eventseries.to_s %> </td>
+<td><%= link_to('Destroy', { :action => 'destroy_eventseries', :id => eventseries }, :confirm => 'Are you sure?', :method => :post) if defined?(tool_links) and tool_links %> </td>
+</tr>
