@@ -52,3 +52,11 @@ f9:
   date: 2007-12-12
   start_time: '14:10:00'
   end_time: '17:00:00'
+
+f10:
+  id: 10
+  date: 2007-01-01
+  start_time: '14:10:00'
+  end_time: '17:00:00'
+  schedulable_id: 1
+  schedulable_type: 'Course'
