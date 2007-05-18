@@ -69,7 +69,8 @@ class CoursesController < ApplicationController
   end
   
   def destroy_event
-    redirect_to :controller => "events", :action => "destroy", :id => params[:id]
+    event =  Resman::Event.find(params[:id]).destroy
+    redirect_to :action => 'show', :id => event.schedulable.id
   end
 
   def edit_event

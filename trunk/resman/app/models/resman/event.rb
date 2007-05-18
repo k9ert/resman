@@ -23,6 +23,7 @@ class Event < ActiveRecord::Base
   # validation that this event takes some time
   def validate
     self.start_time < self.end_time
+    self.date.class == Date
   end
 
   def date=(value)
@@ -40,7 +41,9 @@ class Event < ActiveRecord::Base
     write_attribute(:end_time, value)
   end
 
-
+  def <=>(value)
+    date <=> value.date
+  end
 
   # set a new list of ids for the used resources
   def resource_ids=(ids)
