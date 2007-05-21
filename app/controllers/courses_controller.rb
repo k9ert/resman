@@ -58,6 +58,12 @@ class CoursesController < ApplicationController
   #-----------reman-Actions-------------------
   def create_eventseries
     @eventseries = Resman::Eventseries.new(params[:eventseries])
+    @eventseries.payload do |event|
+      event.event_payload = EventPayload.new
+      # just as an Example
+      event.event_payload.payload1=5
+      event.event_payload.payload2="test"
+    end
     my_schedulable = @@schedulable_class.find(params[:schedulable_id])
     @eventseries.schedulable = my_schedulable
     if @eventseries.save

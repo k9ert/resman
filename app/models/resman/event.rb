@@ -3,13 +3,14 @@ class Event < ActiveRecord::Base
   has_many :resource_uses
   has_many :resources, :through => :resource_uses
   has_one :eventseries
+  has_one :event_payload, :class_name => "::EventPayload"
   belongs_to :schedulable, :polymorphic => true
 
   validates_presence_of :date
   validates_presence_of :start_time
   validates_presence_of :end_time
 
-  after_save :save_resource_uses
+  after_save :save_resource_uses, :save_event_payload
 
   def before_destroy
     puts "informing before destroy"
@@ -103,6 +104,16 @@ class Event < ActiveRecord::Base
       end
     end
     @tmp_resource_ids = nil
+  end
+
+  def save_event_payload
+    begin
+      if self.event_payload != nil
+        self.event_payload.save
+      end
+    rescue
+      # no problem
+    end
   end
 end
 

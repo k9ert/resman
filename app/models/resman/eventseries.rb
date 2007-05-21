@@ -136,6 +136,10 @@ module Resman
       @resource_ids = value
     end
 
+    def payload(&action)
+      @payload_action = action
+    end
+
     def to_s
       me_as_string = ""
       me_as_string = "Starting from "+start_date.to_s+" "
@@ -231,7 +235,11 @@ module Resman
 		:end_time => self.end_time, 
 		:eventseries_id => self.id, 
 		:schedulable => self.schedulable,
-		:resource_ids => self.resource_ids)
+		:resource_ids => self.resource_ids) do |event|
+      if @payload_action != nil
+        @payload_action.call(event)
+      end
+		end
       
     end
   
