@@ -108,7 +108,7 @@ module Resman
       logger.debug "...Done"
     end
 
-    def Eventseries.create_weekly_until(start_date, end_date, start_time, end_time, weekschedule)
+    def Eventseries.create_weekly_until(start_date, end_date, start_time, end_time, weekschedule, resource_ids=[])
       Eventseries.new(:start_date => start_date,
                         :end_date   => end_date,
                         :start_time => start_time,
@@ -116,7 +116,8 @@ module Resman
                         :end_based_on => "enddate",
                         :gen_type    => "weekly",
                         :weekly_each=> 1,
-                        :weekschedule => weekschedule)
+                        :weekschedule => weekschedule,
+                        :resource_ids => resource_ids)
     end
   
 
