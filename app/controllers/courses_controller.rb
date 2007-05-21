@@ -1,6 +1,9 @@
 
 class CoursesController < ApplicationController
   layout "standard"
+
+  # The Class for which this controller is responsible for
+  @@schedulable_class = Course
   
   def index
     list
@@ -52,16 +55,17 @@ class CoursesController < ApplicationController
     redirect_to :action => 'list'
   end
 
+  #-----------reman-Actions-------------------
   def create_eventseries
     @eventseries = Resman::Eventseries.new(params[:eventseries])
-    @course = Course.find(params[:schedulable_id])
-    @eventseries.schedulable = @course
+    my_schedulable = @@schedulable_class.find(params[:schedulable_id])
+    @eventseries.schedulable = my_schedulable
     if @eventseries.save
-      flash[:notice] = 'Events were successfully updated.'
+      flash[:notice] = 'Eventseries and Events were successfully updated.'
     end
-    render :action => 'show', :id => params[:schedulable_id]
+    redirect_to :action => 'show', :id => params[:schedulable_id]
   end
-
+ 
   def destroy_eventseries
     es = Resman::Eventseries.find(params[:id])
     es.destroy
@@ -69,9 +73,9 @@ class CoursesController < ApplicationController
   end
   
   def new_event
-    @course = Course.find(params[:id])
+    my_schedulable = @@schedulable_class.find(params[:id])
     @event = Resman::Event.new
-    @event.schedulable = @course
+    @event.schedulable = my_schedulable
     render :template => "events/new_event"
   end
   
