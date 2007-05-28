@@ -1,0 +1,5 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+first: #colliding with 3,4,5,7
+  id: 1
+
+

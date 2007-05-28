@@ -111,7 +111,7 @@ class CoursesControllerTest < Test::Unit::TestCase
     assert_response :redirect
     assert_redirected_to :action => 'show', :id => 1
 
-    assert_equal num_events + 1, Event.count
+    assert_equal num_events + 1, Resman::Event.count
   end
 
   def test_edit_event
@@ -139,7 +139,7 @@ class CoursesControllerTest < Test::Unit::TestCase
     assert_redirected_to :action => 'show', :id => 1
 
     assert_raise(ActiveRecord::RecordNotFound) {
-      Event.find(10)
+      Resman::Event.find(10)
     }
   end
 end
